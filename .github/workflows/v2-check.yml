@@ -1,0 +1,31 @@
+name: V2 static checks
+on:
+  push:
+    branches: [feat/v2-wanxiang-workshop]
+  pull_request:
+    branches: [main]
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: JavaScript syntax
+        run: node --check app.js
+      - name: Production package stays lightweight
+        shell: bash
+        run: |
+          test $(wc -c < index.html) -lt 30000
+          test $(wc -c < styles.css) -lt 65000
+          test $(wc -c < app.js) -lt 160000
+      - name: V2 shell invariants
+        shell: bash
+        run: |
+          grep -q 'data-panel="create"' index.html
+          grep -q 'data-panel="workshop"' index.html
+          grep -q 'data-panel="atlas"' index.html
+          ! grep -q 'view-repair' index.html
+          ! grep -q 'repairCanvas' app.js
+          grep -q 'WX2-' app.js
