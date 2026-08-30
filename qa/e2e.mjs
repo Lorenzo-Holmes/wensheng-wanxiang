@@ -38,6 +38,18 @@ async function newPage(viewport) {
   return { context, page, errors };
 }
 
+async function assertClosedSheetOutsideViewport(page) {
+  const state = await page.evaluate(() => {
+    const sheet = document.querySelector('#bottom-sheet');
+    const r = sheet.getBoundingClientRect();
+    return { top: r.top, bottom: r.bottom, innerHeight: innerHeight, open: sheet.classList.contains('open'), ariaHidden: sheet.getAttribute('aria-hidden') };
+  });
+  if (state.open || state.ariaHidden !== 'true' || state.top < state.innerHeight - 1) {
+    throw new Error(`closed bottom sheet intrudes into viewport: ${JSON.stringify(state)}`);
+  }
+  return state;
+}
+
 async function drawStroke(page) {
   const box = await page.locator('#stage-canvas').boundingBox();
   if (!box) throw new Error('stage canvas has no bounding box');
@@ -59,7 +71,7 @@ async function drawStroke(page) {
 
 for (const viewport of viewports) {
   const { context, page, errors } = await newPage(viewport);
-  const item = { viewport, errors, overflow: null, firstResultMs: null, fingerprint: null, maxLongTaskMs: 0 };
+  const item = { viewport, errors, overflow: null, closedSheet: null, firstResultMs: null, fingerprint: null, maxLongTaskMs: 0 };
   try {
     await page.goto(baseURL, { waitUntil: 'networkidle' });
     await page.locator('#stage-canvas').waitFor({ state: 'visible' });
@@ -71,12 +83,15 @@ for (const viewport of viewports) {
     if (item.overflow.scrollWidth > item.overflow.innerWidth + 1 || item.overflow.bodyScrollWidth > item.overflow.innerWidth + 1) {
       throw new Error(`horizontal overflow at ${viewport.width}px: ${JSON.stringify(item.overflow)}`);
     }
+    item.closedSheet = await assertClosedSheetOutsideViewport(page);
     item.firstResultMs = await drawStroke(page);
     if (item.firstResultMs > 2000) throw new Error(`first result too slow: ${item.firstResultMs}ms`);
     item.fingerprint = (await page.locator('#fingerprint').textContent())?.trim();
     if (!item.fingerprint || item.fingerprint === '-----') throw new Error('fingerprint was not generated');
     const codeBefore = await page.locator('#copy-code').click().then(() => page.evaluate(() => navigator.clipboard.readText()));
     if (!/^WX2-C-/.test(codeBefore)) throw new Error(`composition code missing: ${codeBefore.slice(0, 32)}`);
+    item.closedSheet = await assertClosedSheetOutsideViewport(page);
+    await page.screenshot({ path: `${outDir}/viewport-${viewport.name}.png`, fullPage: false });
     await page.screenshot({ path: `${outDir}/mobile-${viewport.name}.png`, fullPage: true });
     const longTasks = await page.evaluate(() => window.__longTasks || []);
     item.maxLongTaskMs = longTasks.length ? Math.max(...longTasks) : 0;
@@ -96,6 +111,7 @@ for (const viewport of viewports) {
   const step = (name) => deep.steps.push(name);
   try {
     await page.goto(baseURL, { waitUntil: 'networkidle' });
+    await assertClosedSheetOutsideViewport(page);
     await drawStroke(page);
     step('draw -> pointer-up -> auto growth');
 
@@ -104,6 +120,8 @@ for (const viewport of viewports) {
     await page.locator('[data-motif="petal"]').click();
     if ((await page.locator('#quick-motif').textContent())?.trim() !== '莲瓣') throw new Error('motif switch did not apply');
     await page.locator('#close-sheet').click();
+    await page.waitForTimeout(260);
+    await assertClosedSheetOutsideViewport(page);
     step('motif quick switch');
 
     await page.locator('[data-sheet="rule"]').click();
@@ -111,6 +129,7 @@ for (const viewport of viewports) {
     await page.locator('[data-r="layout"]').selectOption('tile');
     await page.locator('[data-r="repeat"]').evaluate((el) => { el.value = '8'; el.dispatchEvent(new Event('input', { bubbles: true })); });
     await page.locator('#rule-save').click();
+    await page.waitForTimeout(260);
     const rulesSaved = await page.evaluate(() => JSON.parse(localStorage.getItem('wsw:v2:components') || '[]').filter((x) => x.kind === 'R').length);
     if (rulesSaved < 1) throw new Error('custom rule was not saved');
     step('custom rule + live apply + local save');
@@ -119,6 +138,7 @@ for (const viewport of viewports) {
     await page.locator('#create-palette').click();
     await page.locator('#auto-palette').click();
     await page.locator('#palette-save').click();
+    await page.waitForTimeout(260);
     const palettesSaved = await page.evaluate(() => JSON.parse(localStorage.getItem('wsw:v2:components') || '[]').filter((x) => x.kind === 'P').length);
     if (palettesSaved < 1) throw new Error('custom palette was not saved');
     step('curated instant palette + local save');
@@ -133,6 +153,7 @@ for (const viewport of viewports) {
     for (const [x, y] of [[.35,.45],[.5,.3],[.65,.45],[.75,.65]]) await page.mouse.move(mb.x + mb.width*x, mb.y + mb.height*y, { steps: 2 });
     await page.mouse.up();
     await page.locator('#motif-save').click();
+    await page.waitForTimeout(260);
     const motifsSaved = await page.evaluate(() => JSON.parse(localStorage.getItem('wsw:v2:components') || '[]').filter((x) => x.kind === 'M').length);
     if (motifsSaved < 1) throw new Error('custom motif was not saved');
     step('custom motif draw + live tiled preview + local save');
@@ -152,6 +173,8 @@ for (const viewport of viewports) {
     const challengeText = await page.evaluate(() => navigator.clipboard.readText());
     if (!challengeText.includes('WX2-H-') || !challengeText.includes('同笔不同纹')) throw new Error('challenge share text missing WX2-H code');
     await page.locator('#close-sheet').click();
+    await page.waitForTimeout(260);
+    await assertClosedSheetOutsideViewport(page);
     step('same-stroke challenge share');
 
     await page.locator('.bottom-nav [data-view="workshop"]').click();
@@ -170,7 +193,7 @@ for (const viewport of viewports) {
     if (!download.suggestedFilename().endsWith('.png')) throw new Error('export did not produce PNG');
     step('900x1200 PNG export');
 
-    await page.screenshot({ path: `${outDir}/deep-375.png`, fullPage: true });
+    await page.screenshot({ path: `${outDir}/deep-375.png`, fullPage: false });
     const longTasks = await page.evaluate(() => window.__longTasks || []);
     deep.maxLongTaskMs = longTasks.length ? Math.max(...longTasks) : 0;
     if (errors.length) throw new Error(errors.join('\n'));
