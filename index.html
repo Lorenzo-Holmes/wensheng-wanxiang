@@ -1,223 +1,112 @@
 <!doctype html>
 <html lang="zh-CN">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <meta name="theme-color" content="#f3eadb" />
-    <meta name="description" content="纹生万象：把一笔手势织进镜像、旋转与连续纹样的离线生成实验室。" />
-    <title>纹生万象 · 中式纹样生成实验室</title>
-    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
-    <link rel="stylesheet" href="styles.css" />
-  </head>
-  <body>
-    <div class="app-shell">
-      <header class="topbar">
-        <a class="brand-lockup" href="#home" aria-label="返回纹生万象首页">
-          <span class="brand-seal" aria-hidden="true">纹</span>
-          <span class="brand-copy">
-            <strong>纹生万象</strong>
-            <small>中式纹样生成实验室</small>
-          </span>
-        </a>
-        <div class="topbar-actions">
-          <span class="offline-badge"><i></i>离线可玩</span>
-          <button class="icon-button" id="open-info" type="button" aria-label="打开项目说明">?</button>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no" />
+  <meta name="theme-color" content="#efe5d4" />
+  <meta name="description" content="纹生万象：完全离线的中式生成艺术工坊。画一笔，造纹元、纹法与色谱，用万象码分享和 Remix。" />
+  <title>纹生万象 · 中式生成艺术工坊</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<div class="app-shell">
+  <header class="topbar">
+    <button class="brand" data-view="create" type="button" aria-label="回到造纹">
+      <span class="seal">纹</span><span><strong>纹生万象</strong><small>中式生成艺术工坊</small></span>
+    </button>
+    <button class="round-btn" id="open-info" type="button" aria-label="关于纹生万象">?</button>
+  </header>
+
+  <main>
+    <section class="view active" id="view-create" data-panel="create">
+      <div class="create-head">
+        <div><p class="eyebrow">DRAW · GROW · REMIX</p><h1>一笔成纹，<em>把你的手势织进千年。</em></h1></div>
+        <button class="spark-btn" id="inspire" type="button">✦ 灵光</button>
+      </div>
+
+      <section class="stage-card" aria-label="纹样创作舞台">
+        <div class="stage-wrap" id="stage-wrap">
+          <canvas id="stage-canvas" width="540" height="720" aria-label="在这里画一笔，松手即生成纹样"></canvas>
+          <div class="draw-prompt" id="draw-prompt"><strong>在这里画一笔</strong><span>松手即生纹</span></div>
+          <div class="stage-badge" id="stage-badge">离线生成</div>
+          <div class="growth-word" id="growth-word" aria-live="polite"></div>
         </div>
-      </header>
 
-      <main>
-        <section class="hero" id="home" aria-labelledby="hero-title">
-          <div class="hero-copy">
-            <p class="eyebrow">TRADITION × ALGORITHM × PLAY</p>
-            <h1 id="hero-title">一笔成纹，<br /><em>把你的手势织进千年。</em></h1>
-            <p class="hero-description">不是随机图片，而是把传统纹样的规律变成可玩的生成规则。画一笔，让它沿着镜像、旋转与连续结构自己生长。</p>
-            <div class="hero-actions">
-              <button class="button button-primary" data-jump="maker" type="button">开始造纹 <span aria-hidden="true">↗</span></button>
-              <button class="text-button" data-jump="relay" type="button">已有 Seed？传纹接力</button>
-            </div>
-          </div>
-          <div class="hero-orbit" aria-hidden="true">
-            <div class="orbit-ring orbit-ring-one"></div>
-            <div class="orbit-ring orbit-ring-two"></div>
-            <div class="orbit-stamp">生<br />纹</div>
-            <span class="orbit-dot dot-one"></span><span class="orbit-dot dot-two"></span><span class="orbit-dot dot-three"></span>
-          </div>
-          <div class="hero-footnote"><span>01</span> 手势是种子&nbsp;&nbsp;·&nbsp;&nbsp;<span>02</span> 规律是引擎&nbsp;&nbsp;·&nbsp;&nbsp;<span>03</span> 结果可传承</div>
-        </section>
+        <div class="result-meta" id="result-meta" hidden>
+          <div><strong id="result-name">云雷 · 镜生 · 朱砂</strong><small>纹脉 <span id="fingerprint">-----</span></small></div>
+          <button class="tiny-code" id="copy-code" type="button">复制万象码</button>
+        </div>
 
-        <nav class="tabbar" aria-label="功能导航" role="tablist">
-          <button class="tab-button is-active" data-view="maker" role="tab" aria-selected="true" type="button"><span>造纹</span><small>MAKE</small></button>
-          <button class="tab-button" data-view="relay" role="tab" aria-selected="false" type="button"><span>传纹</span><small>RELAY</small></button>
-          <button class="tab-button" data-view="repair" role="tab" aria-selected="false" type="button"><span>古纹修复</span><small>REPAIR</small></button>
-          <button class="tab-button" data-view="archive" role="tab" aria-selected="false" type="button"><span>纹谱</span><small>ARCHIVE</small></button>
-        </nav>
+        <div class="quick-edit" id="quick-edit" hidden>
+          <button data-sheet="motif" type="button"><span>◇</span><b>纹元</b><small id="quick-motif">云雷</small></button>
+          <button data-sheet="rule" type="button"><span>⌘</span><b>纹法</b><small id="quick-rule">镜生</small></button>
+          <button data-sheet="palette" type="button"><span>●</span><b>色谱</b><small id="quick-palette">朱砂</small></button>
+        </div>
 
-        <section class="view-panel is-active" id="view-maker" data-panel="maker" role="tabpanel">
-          <div class="section-heading">
-            <div>
-              <p class="eyebrow">01 / MAKE A PATTERN</p>
-              <h2>先画一笔，<em>再让它生长。</em></h2>
-            </div>
-            <span class="micro-label">全离线 · 本地生成</span>
-          </div>
+        <div class="primary-actions" id="primary-actions" hidden>
+          <button class="ghost" id="redraw" type="button">↶ 重画</button>
+          <button class="ghost" id="favorite" type="button">♡ 收藏</button>
+          <button class="primary" data-sheet="share" type="button">↗ 传这一纹</button>
+        </div>
+        <button class="demo-btn" id="demo-stroke" type="button">替我起一笔</button>
+      </section>
 
-          <div class="studio-grid">
-            <section class="panel drawing-panel">
-              <div class="panel-title-row">
-                <div><span class="step-mark">A</span><h3>画下你的第一笔</h3></div>
-                <span class="panel-kicker" id="stroke-count">0 点</span>
-              </div>
-              <div class="draw-board-wrap">
-                <canvas id="draw-canvas" width="960" height="640" aria-label="手绘输入画布"></canvas>
-                <div class="draw-board-note">按住屏幕 / 鼠标拖动<br /><b>让线条保持一气呵成</b></div>
-              </div>
-              <div class="tool-row">
-                <button class="button button-ghost" id="clear-draw" type="button">清空</button>
-                <button class="button button-ghost" id="demo-stroke" type="button">示范一笔</button>
-                <span class="tool-hint" id="stroke-hint">还没有笔迹，先画一笔或看示范</span>
-              </div>
-            </section>
+      <p class="create-tip" id="create-tip">不用会画画。线条会自动平滑、居中并长成完整纹样。</p>
+    </section>
 
-            <section class="panel controls-panel">
-              <div class="panel-title-row">
-                <div><span class="step-mark">B</span><h3>选择生长规则</h3></div>
-                <span class="panel-kicker">DNA 可复现</span>
-              </div>
+    <section class="view" id="view-workshop" data-panel="workshop" hidden>
+      <div class="section-head"><div><p class="eyebrow">LOCAL WORKSHOP</p><h2>万象工坊</h2><p>作品离线生成，社区发生在小红书。每一枚万象码，都是一个可以 Remix 的创意组件。</p></div></div>
 
-              <div class="control-block">
-                <div class="control-label"><span>纹样体系</span><small>5 SYSTEMS</small></div>
-                <div class="chip-grid" id="system-options">
-                  <button class="choice-chip is-selected" data-system="yunlei" type="button"><b>云雷</b><small>回旋几何</small></button>
-                  <button class="choice-chip" data-system="lotus-vine" type="button"><b>缠枝莲</b><small>枝蔓相接</small></button>
-                  <button class="choice-chip" data-system="lotus-petal" type="button"><b>莲瓣</b><small>瓣瓣相生</small></button>
-                  <button class="choice-chip" data-system="tuanhua" type="button"><b>团花</b><small>中心放射</small></button>
-                  <button class="choice-chip" data-system="ruyi" type="button"><b>如意云</b><small>云气回环</small></button>
-                </div>
-              </div>
+      <section class="import-card">
+        <label for="import-code">粘贴朋友的万象码</label>
+        <div class="import-row"><input id="import-code" type="text" maxlength="180" placeholder="WX2-C-… / WX2-M-…" autocomplete="off" spellcheck="false" /><button class="primary" id="import-btn" type="button">导入</button></div>
+        <div class="import-preview" id="import-preview" hidden></div>
+      </section>
 
-              <div class="control-block">
-                <div class="control-label"><span>结构算法</span><small>5 STRUCTURES</small></div>
-                <div class="segmented-control" id="structure-options">
-                  <button class="is-selected" data-structure="mirror" type="button">镜像</button>
-                  <button data-structure="rotate" type="button">旋转</button>
-                  <button data-structure="repeat-x" type="button">二方连续</button>
-                  <button data-structure="tile" type="button">四方连续</button>
-                  <button data-structure="radial" type="button">放射团花</button>
-                </div>
-              </div>
+      <div class="workshop-grid">
+        <button data-maker="stroke" type="button"><span>～</span><strong>我的笔势</strong><small id="count-stroke">0 个</small></button>
+        <button data-maker="motif" type="button"><span>◇</span><strong>我的纹元</strong><small id="count-motif">0 个</small></button>
+        <button data-maker="rule" type="button"><span>⌘</span><strong>我的纹法</strong><small id="count-rule">0 个</small></button>
+        <button data-maker="palette" type="button"><span>●</span><strong>我的色谱</strong><small id="count-palette">0 个</small></button>
+      </div>
 
-              <div class="control-block">
-                <div class="control-label"><span>国风配色</span><small>PALETTE</small></div>
-                <div class="palette-grid" id="palette-options">
-                  <button class="palette-chip is-selected" data-palette="cinnabar" type="button"><i></i><span>朱砂</span></button>
-                  <button class="palette-chip" data-palette="lapis" type="button"><i></i><span>石青</span></button>
-                  <button class="palette-chip" data-palette="daiqing" type="button"><i></i><span>黛青</span></button>
-                  <button class="palette-chip" data-palette="ink" type="button"><i></i><span>松烟</span></button>
-                  <button class="palette-chip" data-palette="moon" type="button"><i></i><span>月白</span></button>
-                </div>
-              </div>
+      <section class="library-section">
+        <div class="library-head"><div><strong id="library-title">最近创作</strong><small>只保存在这台设备</small></div><button class="text-btn" id="show-all-components" type="button">全部</button></div>
+        <div class="library-list" id="component-list"></div>
+      </section>
+    </section>
 
-              <div class="slider-row">
-                <label for="density-range"><span>纹样密度</span><output id="density-value">中</output></label>
-                <input id="density-range" type="range" min="1" max="5" value="3" />
-              </div>
-              <div class="slider-row">
-                <label for="rhythm-range"><span>生长节奏</span><output id="rhythm-value">均衡</output></label>
-                <input id="rhythm-range" type="range" min="1" max="5" value="3" />
-              </div>
+    <section class="view" id="view-atlas" data-panel="atlas" hidden>
+      <div class="section-head"><div><p class="eyebrow">YOUR PATTERN ATLAS</p><h2>我的纹谱</h2><p>收藏的是规则，不是大图片；缩略图会在需要时重新生成。</p></div></div>
+      <div class="atlas-toolbar"><strong id="atlas-count">0 幅作品</strong><button class="text-btn danger" id="clear-atlas" type="button">清空</button></div>
+      <div class="atlas-grid" id="atlas-list"></div>
+    </section>
+  </main>
 
-              <button class="button button-primary generate-button" id="generate-pattern" type="button"><span class="button-glyph">✦</span>生成一笔成纹</button>
-            </section>
-          </div>
+  <nav class="bottom-nav" aria-label="主导航">
+    <button class="active" data-view="create" type="button"><span>✦</span><b>造纹</b></button>
+    <button data-view="workshop" type="button"><span>◇</span><b>工坊</b></button>
+    <button data-view="atlas" type="button"><span>册</span><b>纹谱</b></button>
+  </nav>
+</div>
 
-          <section class="panel result-panel" aria-live="polite">
-            <div class="panel-title-row result-heading">
-              <div><span class="step-mark">C</span><h3>看它长成你的纹样</h3></div>
-              <span class="generation-status" id="generation-status"><i></i>等待生长</span>
-            </div>
-            <div class="result-layout">
-              <div class="result-stage-wrap">
-                <div class="result-stage" id="result-stage">
-                  <canvas id="result-canvas" width="900" height="1200" aria-label="生成的中式纹样"></canvas>
-                  <div class="growth-label" id="growth-label">一笔成纹 · READY</div>
-                  <div class="stage-corner stage-corner-tl"></div><div class="stage-corner stage-corner-br"></div>
-                </div>
-              </div>
-              <div class="result-side">
-                <div class="seed-card">
-                  <div class="seed-title-row"><span>纹样 DNA</span><span class="seed-status">可复现</span></div>
-                  <code id="seed-value">WW-000000</code>
-                  <p>把这串短 Seed 交给朋友，继续同一幅纹样。</p>
-                  <button class="button button-ghost full-button" id="copy-seed" type="button">复制 Seed</button>
-                </div>
-                <div class="result-facts">
-                  <div><small>体系</small><strong id="fact-system">云雷</strong></div>
-                  <div><small>结构</small><strong id="fact-structure">镜像</strong></div>
-                  <div><small>配色</small><strong id="fact-palette">朱砂</strong></div>
-                </div>
-                <div class="action-stack">
-                  <button class="button button-primary full-button" id="save-image" type="button">保存图片 <span>↓</span></button>
-                  <div class="action-pair"><button class="button button-ghost" id="favorite-pattern" type="button">♡ 收藏</button><button class="button button-ghost" id="share-pattern" type="button">分享 / 发笔记</button></div>
-                </div>
-              </div>
-            </div>
-            <div class="export-bar">
-              <div><span class="export-label">导出尺寸</span><small>适配小红书封面、壁纸与无缝 Tile</small></div>
-              <div class="export-actions"><select id="export-format" aria-label="选择导出尺寸"><option value="card">3:4 小红书卡片</option><option value="wallpaper">9:16 壁纸</option><option value="square">1:1 方图</option><option value="tile">无缝 Tile</option></select><button class="button button-ghost" id="export-image" type="button">导出 PNG</button></div>
-            </div>
-          </section>
+<div class="sheet-backdrop" id="sheet-backdrop" hidden></div>
+<aside class="bottom-sheet" id="bottom-sheet" aria-hidden="true">
+  <div class="sheet-handle"></div>
+  <div class="sheet-head"><div><small id="sheet-kicker">EDIT</small><h3 id="sheet-title">编辑</h3></div><button class="round-btn" id="close-sheet" type="button" aria-label="关闭">×</button></div>
+  <div class="sheet-body" id="sheet-body"></div>
+</aside>
 
-          <div class="culture-note">
-            <div class="note-seal">纹<br />考</div>
-            <div><strong>文化提示</strong><p>“云雷”在故宫词条中被解释为由连续回旋线条构成的几何图纹；“缠枝莲”常以枝蔓为骨架，形成二方或四方连续。这里将这些结构抽象成可玩的规则，不替代文物定名或断代。</p></div>
-            <a href="https://www.dpm.org.cn/lemmas/241368.html" target="_blank" rel="noreferrer">查看来源 ↗</a>
-          </div>
-        </section>
+<dialog id="info-dialog">
+  <button class="dialog-close" id="close-info" type="button">×</button>
+  <span class="big-seal">纹</span>
+  <h2>纹生万象 V2</h2>
+  <p>画一笔即可生成纹样；继续创造自己的纹元、纹法和色谱。所有规则都可以编码进自包含“万象码”，无需服务器即可跨设备复现和 Remix。</p>
+  <ul><li>零框架 · 零后端 · 零外部 API</li><li>作品与收藏默认仅保存在本机</li><li>传统纹样名称只用于官方示范；用户自造内容不会冒充文物定名</li></ul>
+</dialog>
 
-        <section class="view-panel" id="view-relay" data-panel="relay" role="tabpanel" hidden>
-          <div class="section-heading">
-            <div><p class="eyebrow">02 / PASS THE PATTERN</p><h2>把纹样交给下一个人，<em>继续生长。</em></h2></div>
-            <span class="micro-label">异步接力 · 零联网</span>
-          </div>
-          <div class="relay-hero panel">
-            <div class="relay-emblem" aria-hidden="true">传<br /><span>纹</span></div>
-            <div><p class="eyebrow">ASYNC REMIX</p><h3>不是实时联机，<br />而是一条可以接续的纹样谱系。</h3><p>Seed 压缩了笔迹、体系、结构、配色与节奏。复制它，发给朋友；朋友在自己的设备上恢复基础纹样，再画下一笔。</p></div>
-          </div>
-          <div class="relay-grid">
-            <section class="panel relay-card"><div class="panel-title-row"><div><span class="step-mark">01</span><h3>带走当前纹样</h3></div><span class="panel-kicker">CURRENT</span></div><div class="relay-seed-display" id="relay-current-seed">WW-000000</div><p>复制短 Seed，不需要账号、服务器或联网。</p><div class="action-pair"><button class="button button-primary" id="relay-copy-current" type="button">复制当前 Seed</button><button class="button button-ghost" id="relay-to-maker" type="button">回到造纹</button></div></section>
-            <section class="panel relay-card"><div class="panel-title-row"><div><span class="step-mark">02</span><h3>接收朋友的 Seed</h3></div><span class="panel-kicker">RESTORE</span></div><label class="sr-only" for="relay-seed-input">输入朋友的 Seed</label><input class="seed-input" id="relay-seed-input" type="text" maxlength="32" placeholder="例如 WW-7K3P9M" autocomplete="off" /><button class="button button-primary full-button" id="relay-restore" type="button">恢复这幅纹样</button><p>恢复后会回到造纹页，你可以换规则、改配色或再画一笔。</p></section>
-          </div>
-          <div class="relay-steps"><div><span>①</span><strong>A 画出第一笔</strong><small>生成基础纹样与 Seed</small></div><div><span>②</span><strong>B 输入 Seed</strong><small>恢复同一基础作品</small></div><div><span>③</span><strong>C 继续加一笔</strong><small>生成下一代纹谱</small></div></div>
-          <div class="culture-note"><div class="note-seal">传<br />承</div><div><strong>适合这样玩</strong><p>第一棒画骨架，第二棒换结构，第三棒挑配色。每个人都能留下自己的选择，但作品仍然共享同一个起点。</p></div></div>
-        </section>
-
-        <section class="view-panel" id="view-repair" data-panel="repair" role="tabpanel" hidden>
-          <div class="section-heading"><div><p class="eyebrow">03 / RESTORE A MOTIF</p><h2>补回缺失的一格，<em>让古纹重新连起来。</em></h2></div><span class="micro-label">观察 · 推理 · 修复</span></div>
-          <div class="repair-intro panel"><div class="repair-stamp">修</div><div><h3>古纹修复小游戏</h3><p>连续纹样的秘密藏在重复与呼应里。点击画面中缺失的纹样单元，补回它，看看你能否让节奏重新闭合。</p><div class="repair-stats"><span>关卡 <b id="repair-level">01</b>/03</span><span>得分 <b id="repair-score">0</b></span><span>连对 <b id="repair-streak">0</b></span></div></div><button class="button button-primary" id="new-repair" type="button">开始修复</button></div>
-          <section class="panel repair-board-panel"><div class="panel-title-row"><div><span class="step-mark">GAME</span><h3 id="repair-prompt">点击缺失的纹样单元</h3></div><span class="panel-kicker" id="repair-feedback">等你落笔</span></div><div class="repair-board-wrap"><canvas id="repair-canvas" width="900" height="560" aria-label="古纹修复游戏画布"></canvas><div class="repair-guide" id="repair-guide">点击画布里的空白格</div></div><div class="repair-actions"><button class="button button-ghost" id="repair-hint" type="button">给我提示</button><button class="button button-ghost" id="repair-next" type="button" disabled>下一关</button></div></section>
-          <div class="repair-fact"><span class="fact-icon">○</span><p><strong>修复思路：</strong>先看左右单元的方向，再看枝蔓或花瓣的重复间距。游戏中的纹样是本地生成的练习图，不对应某件具体文物。</p></div>
-        </section>
-
-        <section class="view-panel" id="view-archive" data-panel="archive" role="tabpanel" hidden>
-          <div class="section-heading"><div><p class="eyebrow">04 / YOUR PATTERN ATLAS</p><h2>纹谱，<em>收好每一次生长。</em></h2></div><span class="micro-label">本地保存 · 不上传</span></div>
-          <div class="archive-toolbar"><div><strong id="archive-count">0 幅作品</strong><span>只保存在此设备的浏览器里</span></div><button class="button button-ghost" id="clear-archive" type="button">清空纹谱</button></div>
-          <div class="archive-list" id="archive-list"><div class="empty-state"><span>纹</span><h3>还没有收藏</h3><p>在造纹页点击“收藏”，你的作品会在这里形成一册本地纹谱。</p><button class="button button-primary" data-jump="maker" type="button">去造第一幅</button></div></div>
-          <div class="archive-source panel"><div class="panel-title-row"><div><span class="step-mark">READ</span><h3>纹样小辞</h3></div><span class="panel-kicker">SOURCE NOTES</span></div><div class="source-grid"><a href="https://www.dpm.org.cn/lemmas/241368.html" target="_blank" rel="noreferrer"><span>云雷纹</span><small>连续回旋线条构成的几何图纹 · 故宫博物院</small><b>↗</b></a><a href="https://www.dpm.org.cn/lemmas/239646.html" target="_blank" rel="noreferrer"><span>缠枝莲花纹</span><small>传统装饰纹样词条 · 故宫博物院</small><b>↗</b></a><a href="https://www.dpm.org.cn/collection/ceramic/227118.html" target="_blank" rel="noreferrer"><span>二方 / 四方连续</span><small>故宫藏品说明中的连续图案描述</small><b>↗</b></a></div></div>
-        </section>
-      </main>
-
-      <footer class="footer"><span>纹生万象 · WENSHENG WANXIANG</span><span>LOCAL PATTERN LAB / 2026</span></footer>
-    </div>
-
-    <div class="toast" id="toast" role="status" aria-live="polite"></div>
-    <dialog class="info-dialog" id="info-dialog">
-      <button class="dialog-close" id="close-info" type="button" aria-label="关闭">×</button>
-      <p class="eyebrow">ABOUT THE LAB</p><h2>把规律，变成一场游戏。</h2>
-      <p>纹生万象是一间完全离线的中式纹样生成实验室：手势进入，规则生长，Seed 负责传承。没有后端、没有外部 API，作品与纹谱都留在你的设备上。</p>
-      <div class="dialog-list"><div><b>手绘输入</b><span>Canvas 2D 记录一笔轨迹</span></div><div><b>算法生成</b><span>镜像、旋转、二方与四方连续</span></div><div><b>异步传纹</b><span>短 Seed 恢复同一基础作品</span></div></div>
-      <p class="dialog-source">文化说明仅作创作提示，已尽量链接至故宫博物院公开词条与藏品说明。</p>
-    </dialog>
-
-    <script src="app.js"></script>
-  </body>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script src="app.js"></script>
+</body>
 </html>
