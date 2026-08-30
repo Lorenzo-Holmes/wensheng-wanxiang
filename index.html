@@ -108,5 +108,29 @@
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <script src="app.js"></script>
+<script>
+/* V2 safety patch: intercept the experimental HSL helper and use curated local palettes.
+   The existing color input handlers still own state updates, so this adds no second state path. */
+document.addEventListener("click",function(event){
+  var button=event.target.closest&&event.target.closest("#auto-palette");
+  if(!button)return;
+  event.preventDefault();
+  event.stopImmediatePropagation();
+  var sets=[
+    ["#F3E9D8","#8F3B32","#315B5A","#C09252"],
+    ["#EEF0E8","#285B70","#9C4939","#C29A5B"],
+    ["#F1EEE4","#3D6158","#923F3A","#B88348"],
+    ["#E8E0D4","#29322F","#9D473D","#B68E51"],
+    ["#F1F5EF","#4E7875","#A24439","#C49B5D"],
+    ["#F4ECDD","#674D65","#3F6862","#B9894B"],
+    ["#EFE7D9","#765037","#314F62","#B55B43"]
+  ];
+  var chosen=sets[Math.floor(Math.random()*sets.length)];
+  document.querySelectorAll("#sheet-body [data-color]").forEach(function(input,index){
+    input.value=chosen[index];
+    input.dispatchEvent(new Event("input",{bubbles:true}));
+  });
+},true);
+</script>
 </body>
 </html>
