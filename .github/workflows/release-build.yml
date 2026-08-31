@@ -1,0 +1,44 @@
+name: Production release build
+
+on:
+  push:
+    branches:
+      - feat/guofeng-sketchpad-release
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate production files
+        run: |
+          node --check app.js
+          test -f index.html
+          test -f styles.css
+          test -f app.js
+          test -f favicon.svg
+          ! grep -Eq 'https?://[^ ]+\.(png|jpg|jpeg|webp|woff|woff2|ttf)' index.html styles.css app.js
+      - name: Build minimal Xiaohongshu / static production ZIP
+        shell: bash
+        run: |
+          mkdir -p dist
+          zip -9 -j dist/wensheng-wanxiang-production.zip index.html styles.css app.js favicon.svg
+          sha256sum dist/wensheng-wanxiang-production.zip > dist/SHA256SUMS.txt
+          unzip -l dist/wensheng-wanxiang-production.zip
+          test "$(unzip -Z1 dist/wensheng-wanxiang-production.zip | wc -l)" -eq 4
+      - name: Upload production artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: wensheng-wanxiang-production
+          path: |
+            dist/wensheng-wanxiang-production.zip
+            dist/SHA256SUMS.txt
+          if-no-files-found: error
+          retention-days: 30

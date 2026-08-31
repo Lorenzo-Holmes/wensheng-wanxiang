@@ -1,16 +1,17 @@
-name: V2 mobile E2E
+name: Sketchpad mobile E2E
 
 on:
   push:
     branches:
-      - test/v2-mobile-e2e
+      - feat/guofeng-sketchpad-release
   pull_request:
+    branches:
+      - main
     paths:
       - 'index.html'
       - 'styles.css'
       - 'app.js'
       - 'qa/e2e.mjs'
-      - 'qa/legacy-smoke.mjs'
       - '.github/workflows/v2-e2e.yml'
 
 jobs:
@@ -35,14 +36,12 @@ jobs:
           done
           cat /tmp/wsw-http.log
           exit 1
-      - name: Run Chromium mobile E2E
+      - name: Run Chromium sketchpad E2E
         run: node qa/e2e.mjs
-      - name: Run legacy Seed and persistence smoke
-        run: node qa/legacy-smoke.mjs
       - name: Upload screenshots and JSON report
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: v2-e2e-artifacts
+          name: sketchpad-e2e-artifacts
           path: qa/e2e-artifacts
           if-no-files-found: warn

@@ -1,7 +1,7 @@
-name: V2 static checks
+name: Sketchpad static checks
 on:
   push:
-    branches: [feat/v2-wanxiang-workshop]
+    branches: [feat/guofeng-sketchpad-release]
   pull_request:
     branches: [main]
 jobs:
@@ -17,15 +17,18 @@ jobs:
       - name: Production package stays lightweight
         shell: bash
         run: |
-          test $(wc -c < index.html) -lt 30000
-          test $(wc -c < styles.css) -lt 65000
-          test $(wc -c < app.js) -lt 160000
-      - name: V2 shell invariants
+          test $(wc -c < index.html) -lt 20000
+          test $(wc -c < styles.css) -lt 40000
+          test $(wc -c < app.js) -lt 100000
+      - name: Sketchpad invariants
         shell: bash
         run: |
-          grep -q 'data-panel="create"' index.html
-          grep -q 'data-panel="workshop"' index.html
-          grep -q 'data-panel="atlas"' index.html
-          ! grep -q 'view-repair' index.html
-          ! grep -q 'repairCanvas' app.js
-          grep -q 'WX2-' app.js
+          grep -q 'id="committed-canvas"' index.html
+          grep -q 'id="preview-canvas"' index.html
+          grep -q '一指落笔' index.html
+          grep -q 'WB2-' app.js
+          grep -q '1440' app.js
+          grep -q '2160' app.js
+          grep -q 'requestAnimationFrame' app.js
+          ! grep -q 'stage-canvas' index.html
+          ! grep -Eq 'https?://[^ ]+\.(png|jpg|woff|ttf)' index.html styles.css app.js
