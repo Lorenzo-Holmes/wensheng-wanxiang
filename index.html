@@ -3,134 +3,81 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no" />
-  <meta name="theme-color" content="#efe5d4" />
-  <meta name="description" content="纹生万象：完全离线的中式生成艺术工坊。画一笔，造纹元、纹法与色谱，用万象码分享和 Remix。" />
-  <title>纹生万象 · 中式生成艺术工坊</title>
+  <meta name="theme-color" content="#e9e0d2" />
+  <meta name="description" content="纹生万象 · 国风随笔画：一张宣纸，一盒可以分享种子的国风画笔。" />
+  <title>纹生万象 · 国风随笔画</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-<div class="app-shell">
+<div class="app" id="app">
   <header class="topbar">
-    <button class="brand" data-view="create" type="button" aria-label="回到造纹">
-      <span class="seal">纹</span><span><strong>纹生万象</strong><small>中式生成艺术工坊</small></span>
-    </button>
-    <button class="round-btn" id="open-info" type="button" aria-label="关于纹生万象">?</button>
+    <div class="brand" aria-label="纹生万象">
+      <span class="seal">纹</span>
+      <span class="brand-copy"><strong>纹生万象</strong><small>国风随笔画</small></span>
+    </div>
+    <div class="top-actions">
+      <button class="icon-btn" id="undo" type="button" aria-label="撤销" disabled>↶</button>
+      <button class="icon-btn" id="redo" type="button" aria-label="重做" disabled>↷</button>
+      <button class="export-btn" id="open-export" type="button">导出</button>
+    </div>
   </header>
 
-  <main>
-    <section class="view active" id="view-create" data-panel="create">
-      <div class="create-head">
-        <div><p class="eyebrow">DRAW · GROW · REMIX</p><h1>一笔成纹，<em>把你的手势织进千年。</em></h1></div>
-        <button class="spark-btn" id="inspire" type="button">✦ 灵光</button>
+  <main class="workspace" id="workspace">
+    <div class="canvas-viewport" id="canvas-viewport" aria-label="绘画区域；一指绘画，两指缩放移动">
+      <div class="paper-scene" id="paper-scene">
+        <canvas id="committed-canvas" width="720" height="960"></canvas>
+        <canvas id="preview-canvas" width="720" height="960" aria-label="画布"></canvas>
+        <div class="paper-grain" aria-hidden="true"></div>
       </div>
-
-      <section class="stage-card" aria-label="纹样创作舞台">
-        <div class="stage-wrap" id="stage-wrap">
-          <canvas id="stage-canvas" width="540" height="720" aria-label="在这里画一笔，松手即生成纹样"></canvas>
-          <div class="draw-prompt" id="draw-prompt"><strong>在这里画一笔</strong><span>松手即生纹</span></div>
-          <div class="stage-badge" id="stage-badge">离线生成</div>
-          <div class="growth-word" id="growth-word" aria-live="polite"></div>
-        </div>
-
-        <div class="result-meta" id="result-meta" hidden>
-          <div><strong id="result-name">云雷 · 镜生 · 朱砂</strong><small>纹脉 <span id="fingerprint">-----</span></small></div>
-          <button class="tiny-code" id="copy-code" type="button">复制万象码</button>
-        </div>
-
-        <div class="quick-edit" id="quick-edit" hidden>
-          <button data-sheet="motif" type="button"><span>◇</span><b>纹元</b><small id="quick-motif">云雷</small></button>
-          <button data-sheet="rule" type="button"><span>⌘</span><b>纹法</b><small id="quick-rule">镜生</small></button>
-          <button data-sheet="palette" type="button"><span>●</span><b>色谱</b><small id="quick-palette">朱砂</small></button>
-        </div>
-
-        <div class="primary-actions" id="primary-actions" hidden>
-          <button class="ghost" id="redraw" type="button">↶ 重画</button>
-          <button class="ghost" id="favorite" type="button">♡ 收藏</button>
-          <button class="primary" data-sheet="share" type="button">↗ 传这一纹</button>
-        </div>
-        <button class="demo-btn" id="demo-stroke" type="button">替我起一笔</button>
-      </section>
-
-      <p class="create-tip" id="create-tip">不用会画画。线条会自动平滑、居中并长成完整纹样。</p>
-    </section>
-
-    <section class="view" id="view-workshop" data-panel="workshop" hidden>
-      <div class="section-head"><div><p class="eyebrow">LOCAL WORKSHOP</p><h2>万象工坊</h2><p>作品离线生成，社区发生在小红书。每一枚万象码，都是一个可以 Remix 的创意组件。</p></div></div>
-
-      <section class="import-card">
-        <label for="import-code">粘贴朋友的万象码</label>
-        <div class="import-row"><input id="import-code" type="text" maxlength="180" placeholder="WX2-C-… / WX2-M-…" autocomplete="off" spellcheck="false" /><button class="primary" id="import-btn" type="button">导入</button></div>
-        <div class="import-preview" id="import-preview" hidden></div>
-      </section>
-
-      <div class="workshop-grid">
-        <button data-maker="stroke" type="button"><span>～</span><strong>我的笔势</strong><small id="count-stroke">0 个</small></button>
-        <button data-maker="motif" type="button"><span>◇</span><strong>我的纹元</strong><small id="count-motif">0 个</small></button>
-        <button data-maker="rule" type="button"><span>⌘</span><strong>我的纹法</strong><small id="count-rule">0 个</small></button>
-        <button data-maker="palette" type="button"><span>●</span><strong>我的色谱</strong><small id="count-palette">0 个</small></button>
+      <div class="empty-hint" id="empty-hint">
+        <strong>直接画吧</strong>
+        <span>一指落笔 · 两指缩放移动</span>
       </div>
-
-      <section class="library-section">
-        <div class="library-head"><div><strong id="library-title">最近创作</strong><small>只保存在这台设备</small></div><button class="text-btn" id="show-all-components" type="button">全部</button></div>
-        <div class="library-list" id="component-list"></div>
-      </section>
-    </section>
-
-    <section class="view" id="view-atlas" data-panel="atlas" hidden>
-      <div class="section-head"><div><p class="eyebrow">YOUR PATTERN ATLAS</p><h2>我的纹谱</h2><p>收藏的是规则，不是大图片；缩略图会在需要时重新生成。</p></div></div>
-      <div class="atlas-toolbar"><strong id="atlas-count">0 幅作品</strong><button class="text-btn danger" id="clear-atlas" type="button">清空</button></div>
-      <div class="atlas-grid" id="atlas-list"></div>
-    </section>
+      <div class="canvas-status" id="canvas-status">3:4 · 高清画布</div>
+      <button class="fit-btn" id="fit-view" type="button" aria-label="适应画布">适应</button>
+      <div class="zoom-badge" id="zoom-badge">100%</div>
+    </div>
   </main>
 
-  <nav class="bottom-nav" aria-label="主导航">
-    <button class="active" data-view="create" type="button"><span>✦</span><b>造纹</b></button>
-    <button data-view="workshop" type="button"><span>◇</span><b>工坊</b></button>
-    <button data-view="atlas" type="button"><span>册</span><b>纹谱</b></button>
+  <nav class="tool-dock" aria-label="绘画工具">
+    <button class="tool active" id="open-brushes" type="button">
+      <span class="brush-dot" id="brush-dot"></span><b>画笔</b><small id="brush-name">松烟墨</small>
+    </button>
+    <label class="tool color-tool" for="quick-color">
+      <span class="color-dot" id="color-dot"></span><b>颜色</b><small id="color-label">墨色</small>
+      <input id="quick-color" type="color" value="#2f2a27" aria-label="画笔颜色" />
+    </label>
+    <button class="tool" id="open-size" type="button"><span class="size-icon">━</span><b>粗细</b><small id="size-label">12</small></button>
+    <button class="tool" id="eraser" type="button"><span>⌫</span><b>橡皮</b><small>按笔擦</small></button>
+    <button class="tool" id="open-more" type="button"><span>•••</span><b>更多</b><small>画布</small></button>
   </nav>
 </div>
 
 <div class="sheet-backdrop" id="sheet-backdrop" hidden></div>
 <aside class="bottom-sheet" id="bottom-sheet" aria-hidden="true">
   <div class="sheet-handle"></div>
-  <div class="sheet-head"><div><small id="sheet-kicker">EDIT</small><h3 id="sheet-title">编辑</h3></div><button class="round-btn" id="close-sheet" type="button" aria-label="关闭">×</button></div>
+  <header class="sheet-head">
+    <div><small id="sheet-kicker">BRUSH</small><h2 id="sheet-title">画笔</h2></div>
+    <button class="icon-btn" id="close-sheet" type="button" aria-label="关闭">×</button>
+  </header>
   <div class="sheet-body" id="sheet-body"></div>
 </aside>
 
 <dialog id="info-dialog">
   <button class="dialog-close" id="close-info" type="button">×</button>
   <span class="big-seal">纹</span>
-  <h2>纹生万象 V2</h2>
-  <p>画一笔即可生成纹样；继续创造自己的纹元、纹法和色谱。所有规则都可以编码进自包含“万象码”，无需服务器即可跨设备复现和 Remix。</p>
-  <ul><li>零框架 · 零后端 · 零外部 API</li><li>作品与收藏默认仅保存在本机</li><li>传统纹样名称只用于官方示范；用户自造内容不会冒充文物定名</li></ul>
+  <h2>纹生万象 · 国风随笔画</h2>
+  <p>像普通画图软件一样随手画，但画笔来自水墨、飞白与传统纹样。每支画笔都可以压成一枚 <b>WB2 画笔种子</b>，复制给别人继续创作。</p>
+  <ul>
+    <li>一指绘画；两指缩放、移动画布。</li>
+    <li>作品只在本机保存，分享时导出高清 PNG。</li>
+    <li>画笔 Seed 只包含画笔配置，不包含你的作品。</li>
+    <li>纯前端、零后端、零外部资源。</li>
+  </ul>
 </dialog>
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <script src="app.js"></script>
-<script>
-/* V2 safety patch: intercept the experimental HSL helper and use curated local palettes.
-   The existing color input handlers still own state updates, so this adds no second state path. */
-document.addEventListener("click",function(event){
-  var button=event.target.closest&&event.target.closest("#auto-palette");
-  if(!button)return;
-  event.preventDefault();
-  event.stopImmediatePropagation();
-  var sets=[
-    ["#F3E9D8","#8F3B32","#315B5A","#C09252"],
-    ["#EEF0E8","#285B70","#9C4939","#C29A5B"],
-    ["#F1EEE4","#3D6158","#923F3A","#B88348"],
-    ["#E8E0D4","#29322F","#9D473D","#B68E51"],
-    ["#F1F5EF","#4E7875","#A24439","#C49B5D"],
-    ["#F4ECDD","#674D65","#3F6862","#B9894B"],
-    ["#EFE7D9","#765037","#314F62","#B55B43"]
-  ];
-  var chosen=sets[Math.floor(Math.random()*sets.length)];
-  document.querySelectorAll("#sheet-body [data-color]").forEach(function(input,index){
-    input.value=chosen[index];
-    input.dispatchEvent(new Event("input",{bubbles:true}));
-  });
-},true);
-</script>
 </body>
 </html>
