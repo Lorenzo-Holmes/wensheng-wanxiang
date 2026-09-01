@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no" />
-  <meta name="theme-color" content="#e9e0d2" />
+  <meta name="theme-color" content="#f4eee7" />
   <meta name="description" content="纹生万象 · 国风随笔画：一张宣纸，一盒可以分享种子的国风画笔。" />
   <title>纹生万象 · 国风随笔画</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
@@ -12,13 +12,17 @@
 <body>
 <div class="app" id="app">
   <header class="topbar">
-    <div class="brand" aria-label="纹生万象">
-      <span class="seal">纹</span>
-      <span class="brand-copy"><strong>纹生万象</strong><small>国风随笔画</small></span>
+    <div class="brand" aria-label="纹生万象 · 国风随笔画">
+      <span class="seal" aria-hidden="true">纹</span>
+      <span class="brand-copy"><strong>纹生万象</strong></span>
     </div>
     <div class="top-actions">
-      <button class="icon-btn" id="undo" type="button" aria-label="撤销" disabled>↶</button>
-      <button class="icon-btn" id="redo" type="button" aria-label="重做" disabled>↷</button>
+      <button class="icon-btn" id="undo" type="button" aria-label="撤销" disabled>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10h10a5 5 0 0 1 5 5v2"/><polyline points="7 6 3 10 7 14"/></svg>
+      </button>
+      <button class="icon-btn" id="redo" type="button" aria-label="重做" disabled>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 10H11a5 5 0 0 0-5 5v2"/><polyline points="17 6 21 10 17 14"/></svg>
+      </button>
       <button class="export-btn" id="open-export" type="button">导出</button>
     </div>
   </header>
@@ -35,46 +39,69 @@
         <span>一指落笔 · 两指缩放移动</span>
       </div>
       <div class="canvas-status" id="canvas-status">3:4 · 高清画布</div>
-      <button class="fit-btn" id="fit-view" type="button" aria-label="适应画布">适应</button>
+      <button class="fit-btn" id="fit-view" type="button" aria-label="适应画布">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+        <span>适应</span>
+      </button>
       <div class="zoom-badge" id="zoom-badge">100%</div>
     </div>
   </main>
 
   <nav class="tool-dock" aria-label="绘画工具">
-    <button class="tool active" id="open-brushes" type="button">
-      <span class="brush-dot" id="brush-dot"></span><b>画笔</b><small id="brush-name">松烟墨</small>
+    <button class="tool active" id="open-brushes" type="button" aria-label="画笔选择">
+      <span class="brush-dot" id="brush-dot"></span>
+      <span class="tool-meta"><b>画笔</b><small id="brush-name">松烟墨</small></span>
     </button>
-    <label class="tool color-tool" for="quick-color">
-      <span class="color-dot" id="color-dot"></span><b>颜色</b><small id="color-label">墨色</small>
-      <input id="quick-color" type="color" value="#2f2a27" aria-label="画笔颜色" />
+    <label class="tool color-tool" for="quick-color" aria-label="画笔颜色">
+      <span class="color-dot" id="color-dot"></span>
+      <span class="tool-meta"><b>颜色</b><small id="color-label">#2F2A27</small></span>
+      <input id="quick-color" type="color" value="#2f2a27" aria-label="画笔颜色选择" />
     </label>
-    <button class="tool" id="open-size" type="button"><span class="size-icon">━</span><b>粗细</b><small id="size-label">12</small></button>
-    <button class="tool" id="eraser" type="button"><span>⌫</span><b>橡皮</b><small>按笔擦</small></button>
-    <button class="tool" id="open-more" type="button"><span>•••</span><b>更多</b><small>画布</small></button>
+    <button class="tool" id="open-size" type="button" aria-label="笔触粗细调节">
+      <span class="tool-icon" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="3" y1="12" x2="21" y2="12" stroke-width="3.5"/></svg></span>
+      <span class="tool-meta"><b>粗细</b><small id="size-label">12</small></span>
+    </button>
+    <button class="tool" id="eraser" type="button" aria-label="橡皮擦工具">
+      <span class="tool-icon" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21"/><path d="M22 21H7"/><path d="m5 11 9 9"/></svg></span>
+      <span class="tool-meta"><b>橡皮</b><small>按笔擦</small></span>
+    </button>
+    <button class="tool" id="open-more" type="button" aria-label="更多设置">
+      <span class="tool-icon" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/><circle cx="5" cy="12" r="1.5"/></svg></span>
+      <span class="tool-meta"><b>更多</b><small>画布</small></span>
+    </button>
   </nav>
 </div>
 
 <div class="sheet-backdrop" id="sheet-backdrop" hidden></div>
-<aside class="bottom-sheet" id="bottom-sheet" aria-hidden="true">
-  <div class="sheet-handle"></div>
+<aside class="bottom-sheet" id="bottom-sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-title" aria-hidden="true">
+  <div class="sheet-handle" aria-hidden="true"></div>
   <header class="sheet-head">
-    <div><small id="sheet-kicker">BRUSH</small><h2 id="sheet-title">画笔</h2></div>
-    <button class="icon-btn" id="close-sheet" type="button" aria-label="关闭">×</button>
+    <div class="sheet-head-titles">
+      <small id="sheet-kicker" class="sheet-kicker">国风画笔</small>
+      <h2 id="sheet-title">画笔</h2>
+    </div>
+    <button class="icon-btn close-sheet-btn" id="close-sheet" type="button" aria-label="关闭面板">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
   </header>
   <div class="sheet-body" id="sheet-body"></div>
 </aside>
 
-<dialog id="info-dialog">
-  <button class="dialog-close" id="close-info" type="button">×</button>
-  <span class="big-seal">纹</span>
-  <h2>纹生万象 · 国风随笔画</h2>
-  <p>像普通画图软件一样随手画，但画笔来自水墨、飞白与传统纹样。每支画笔都可以压成一枚 <b>WB2 画笔种子</b>，复制给别人继续创作。</p>
-  <ul>
-    <li>一指绘画；两指缩放、移动画布。</li>
-    <li>作品只在本机保存，分享时导出高清 PNG。</li>
-    <li>画笔 Seed 只包含画笔配置，不包含你的作品。</li>
-    <li>纯前端、零后端、零外部资源。</li>
-  </ul>
+<dialog id="info-dialog" aria-labelledby="info-title">
+  <button class="dialog-close" id="close-info" type="button" aria-label="关闭使用说明">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+  </button>
+  <div class="info-content">
+    <span class="big-seal" aria-hidden="true">纹</span>
+    <h2 id="info-title">纹生万象 · 国风随笔画</h2>
+    <p>像普通画图软件一样随手画，但画笔来自水墨、飞白与传统纹样。每支画笔都可以压成一枚 <b>WB2 画笔种子</b>，复制给别人继续创作。</p>
+    <ul>
+      <li>一指绘画；两指缩放、移动画布。</li>
+      <li>作品只在本机保存，分享时导出高清 PNG。</li>
+      <li>画笔 Seed 只包含画笔配置，不包含你的作品。</li>
+      <li>纯前端、零后端、零外部资源。</li>
+    </ul>
+  </div>
 </dialog>
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
